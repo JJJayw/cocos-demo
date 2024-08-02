@@ -3,7 +3,7 @@ import ResourceManger from '../Runtime/ResourceManager';
 import { StateMachine } from './StateMachine';
 import { sortSpriteFrame } from '../Utils';
 
-const ANIMATION_SPEED = 1 / 8;
+export const ANIMATION_SPEED = 1 / 8;
 
 /**
  * 1. 需要知道animationClip
@@ -12,7 +12,12 @@ const ANIMATION_SPEED = 1 / 8;
 export default class state {
     private animationClip: AnimationClip;
 
-    constructor(private fsm: StateMachine, private path: string, private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal) {
+    constructor(
+        private fsm: StateMachine,
+        private path: string,
+        private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
+        private speed: number = ANIMATION_SPEED,
+    ) {
         this.init();
     }
 
@@ -25,12 +30,12 @@ export default class state {
         this.animationClip.duration = 1.0; // 整个动画剪辑的周期
         const track = new animation.ObjectTrack();
         track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame');
-        const frames: Array<[number, SpriteFrame]> = sortSpriteFrame(spriteFrames).map((item, index) => [ANIMATION_SPEED * index, item]);
+        const frames: Array<[number, SpriteFrame]> = sortSpriteFrame(spriteFrames).map((item, index) => [this.speed * index, item]);
         track.channel.curve.assignSorted(frames);
         // 最后将轨道添加到动画剪辑以应用
         this.animationClip.addTrack(track);
         this.animationClip.name = this.path;
-        this.animationClip.duration = frames.length * ANIMATION_SPEED;
+        this.animationClip.duration = frames.length * this.speed;
         this.animationClip.wrapMode = this.wrapMode;
     }
 
