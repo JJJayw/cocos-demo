@@ -1,4 +1,4 @@
-import { _decorator, Component, EventKeyboard, input, Input, KeyCode, Node } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 import { TileMapManger } from 'db://assets/Script/Tile/TileMapManger';
 import { createUINode } from '../../Utils';
 import Levels, { ILevel } from 'db://assets/Levels/index';
@@ -14,6 +14,7 @@ import { BurstManager } from '../Burst/BurstManager';
 import { SpikesManager } from '../Spikes/SpikesManager';
 import { SmokeManager } from '../Smoke/SmokeManager';
 import FaderManager from '../../Runtime/FaderManager';
+import { ShakeManager } from '../UI/ShakeManager';
 
 const { ccclass, property } = _decorator;
 
@@ -111,6 +112,7 @@ export class BatteManger extends Component {
     generateStage() {
         this.stage = createUINode();
         this.stage.setParent(this.node);
+        this.stage.addComponent(ShakeManager);
     }
 
     // 生成地图
@@ -127,6 +129,7 @@ export class BatteManger extends Component {
         const { mapRowCount } = DataManger.instance;
         const disX = (TILE_WIDTH * mapRowCount) / 2;
         const disY = (TILE_HEIGHT * mapRowCount) / 2 + TILE_BASE_HEIGHT;
+        this.stage.getComponent(ShakeManager).stop();
         this.stage.setPosition(-disX, disY);
     }
 

@@ -1,6 +1,4 @@
-import { _decorator, Component, Node, Event, Graphics, view, Color, game, BlockInputEvents, UITransform } from 'cc';
-import EventManger from '../../Runtime/EventManager';
-import { CONTROLLER_ENUM, EVENT_ENUM } from '../../Enums';
+import { _decorator, Component, Graphics, view, Color, game, BlockInputEvents, UITransform } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -13,7 +11,7 @@ enum FADE_STATE_ENUM {
     FADE_OUT = 'FADE_OUT',
 }
 
-export const DEFAULT_DURATION = 2000;
+export const DEFAULT_DURATION = 200;
 
 @ccclass('DrawManager')
 export class DrawManager extends Component {
