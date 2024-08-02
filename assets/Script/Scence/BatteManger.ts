@@ -12,6 +12,7 @@ import { DoorManager } from '../Door/DoorManager';
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager';
 import { BurstManager } from '../Burst/BurstManager';
 import { SpikesManager } from '../Spikes/SpikesManager';
+import { SmokeManager } from '../Smoke/SmokeManager';
 
 const { ccclass, property } = _decorator;
 
@@ -19,6 +20,7 @@ const { ccclass, property } = _decorator;
 export class BatteManger extends Component {
     level: ILevel;
     stage: Node;
+    private smokeLayer: Node;
 
     start() {
         this.generateStage();
@@ -31,11 +33,13 @@ export class BatteManger extends Component {
         // 绑定进入下一关事件
         EventManager.instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this);
         EventManager.instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this);
+        EventManager.instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this);
     }
 
     onDestroy() {
         // 销毁进入下一关事件
         EventManager.instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel);
+        EventManager.instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke);
     }
 
     // 初始化关卡
@@ -49,10 +53,11 @@ export class BatteManger extends Component {
             DataManger.instance.mapRowCount = this.level.mapInfo.length || 0;
             DataManger.instance.mapColumnCount = this.level.mapInfo[0].length || 0;
             this.generateTileMap();
-            this.generateDoor();
-            this.generateEnmies();
             this.generateBurst();
             this.generateSpikes();
+            this.generateSmokeLayer();
+            this.generateDoor();
+            this.generateEnmies();
             this.generatePlayer();
         }
     }
@@ -65,6 +70,36 @@ export class BatteManger extends Component {
     clearLevel() {
         this.stage.destroyAllChildren();
         DataManger.instance.reset();
+    }
+
+    // 生成烟雾画板层
+    generateSmokeLayer() {
+        this.smokeLayer = createUINode();
+        this.smokeLayer.setParent(this.stage);
+    }
+
+    // 生成烟雾
+    async generateSmoke(x: number, y: number, direction: DIRECTION_ENUM) {
+        const item = DataManger.instance.smoke.find(smoke => smoke.state === ENTITY_STATE_ENUM.DEATH);
+        if (item) {
+            item.x = x;
+            item.y = y;
+            item.direction = direction;
+            item.state = ENTITY_STATE_ENUM.IDLE;
+            item.node.setPosition(x * TILE_WIDTH - TILE_WIDTH * 1.5, -y * TILE_HEIGHT + TILE_HEIGHT * 1.5);
+        } else {
+            const smoke = createUINode();
+            smoke.setParent(this.smokeLayer);
+            const smokeManager = smoke.addComponent(SmokeManager);
+            await smokeManager.init({
+                x,
+                y,
+                direction,
+                state: ENTITY_STATE_ENUM.IDLE,
+                type: ENTITY_TYPE_ENUM.SMOKE,
+            });
+            DataManger.instance.smoke.push(smokeManager);
+        }
     }
 
     // 生成舞台
@@ -154,6 +189,9 @@ export class BatteManger extends Component {
     }
 
     checkArrived() {
+        if (!DataManger.instance.door || !DataManger.instance.player) {
+            return;
+        }
         const { x: playerX, y: playerY } = DataManger.instance.player;
         const { x: doorX, y: doorY, state: doorState } = DataManger.instance.door;
         if (doorState === ENTITY_STATE_ENUM.DEATH && playerX === doorX && playerY === doorY) {
