@@ -80,8 +80,11 @@ export class PlayerManager extends EntityManager {
 
         const id = this.willAttack(inputDirection);
         if (id) {
+            EventManger.instance.emit(EVENT_ENUM.RECORD_STEP);
+            this.state = ENTITY_STATE_ENUM.ATTACK;
             EventManger.instance.emit(EVENT_ENUM.ATTACK_ENEMY, id);
             EventManger.instance.emit(EVENT_ENUM.DOOR_OPEN);
+            EventManger.instance.emit(EVENT_ENUM.PLAYER_MOVE_END);
             return;
         }
         if (this.willBlock(inputDirection)) {
@@ -154,6 +157,7 @@ export class PlayerManager extends EntityManager {
 
     // 移动
     move(inputDirection: CONTROLLER_ENUM) {
+        EventManager.instance.emit(EVENT_ENUM.RECORD_STEP);
         if (inputDirection === CONTROLLER_ENUM.TOP) {
             this.targetY -= 1;
             this.isMoving = true;

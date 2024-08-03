@@ -2,11 +2,11 @@ import { _decorator, Component, Sprite, SpriteFrame, UITransform } from 'cc';
 import { TILE_TYPE_ENUM } from '../../Enums';
 
 // 瓦片基础高度
-export const TILE_BASE_HEIGHT = 120;
+export const TILE_BASE_HEIGHT = 90;
 // 瓦片宽度
-export const TILE_WIDTH = 55;
+export const TILE_WIDTH = 40;
 // 瓦片高度
-export const TILE_HEIGHT = 55;
+export const TILE_HEIGHT = 40;
 const { ccclass, property } = _decorator;
 
 @ccclass('TileManager')
