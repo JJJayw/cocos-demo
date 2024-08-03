@@ -1,5 +1,5 @@
 import { _decorator, UITransform } from 'cc';
-import { ENTITY_STATE_ENUM, EVENT_ENUM } from '../../Enums';
+import { ENTITY_STATE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../../Enums';
 import { BurstStateMachine } from './BurstStateMachine';
 import EventManager from '../../Runtime/EventManager';
 import DataManager from '../../Runtime/DataManager';
@@ -37,6 +37,7 @@ export class BurstManager extends EntityManager {
         } else if (this.state === ENTITY_STATE_ENUM.ATTACK) {
             this.state = ENTITY_STATE_ENUM.DEATH;
             //如果我裂开的时候你人在我上面，你直接狗带吧
+            EventManager.instance.emit(EVENT_ENUM.SCREEN_SHAKE, SHAKE_TYPE_ENUM.BOTTOM);
             if (this.x === playerX && this.y === playerY) {
                 EventManager.instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.AIRDEATH);
             }
