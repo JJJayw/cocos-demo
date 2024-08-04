@@ -10,6 +10,7 @@ export class StartManager extends Component {
         FaderManager.instance.fadeOut(1000);
         this.node.once(Node.EventType.TOUCH_END, this.handleStart, this);
     }
+
     async handleStart() {
         await FaderManager.instance.fadeIn(300);
         director.loadScene(SCREEN_ENUM.Battle);

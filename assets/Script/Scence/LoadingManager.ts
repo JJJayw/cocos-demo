@@ -9,7 +9,7 @@ export class LoadingManager extends Component {
     bar: ProgressBar;
     onLoad() {
         resources.preloadDir(
-            'texture/ctrl',
+            'texture',
             (cur, total) => {
                 this.bar.progress = cur / total;
             },
